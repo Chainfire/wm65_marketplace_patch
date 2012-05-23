@@ -1,6 +1,5 @@
 --- BELOW IS A COPY OF THE RAW TEXT OF MY BLOG POST ABOUT THIS CODE ---
 
-
 This week, the Windows Mobile 6.x Marketplace was closed. The end of an era :)
 
 While most current readers will probably know me from my work with Android, I used to do a lot of things on Windows Mobile. Several of those projects were pretty unique, due to hacking techniques employed that few others knew. I am referring here to runtime/dynamically patching kernel code, coredll imports, etc.
@@ -15,7 +14,7 @@ You will need the accompanying code, which is hosted at [url="http://github.com/
 
 [b]The test project[/b]
 
-Let us start with the [url="http://github.com/Chainfire/wm65_marketplace_patch/tree/master/Test_VS2K8"]Test_VS2K8[/url]] folder. This folder contains the Visual Studio test project. It is simply the minimal code to test Marketplace's "Advanced" Protection. Aside from [i]_tmain[/i] function, the entirety of the [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Test_VS2K8/MPAdvTest.cpp]MPAdvTest.cpp[/url] file is copy/pasted from Microsoft's example code.
+Let us start with the [url="http://github.com/Chainfire/wm65_marketplace_patch/tree/master/Test_VS2K8"]Test_VS2K8[/url] folder. This folder contains the Visual Studio test project. It is simply the minimal code to test Marketplace's "Advanced" Protection. Aside from [i]_tmain[/i] function, the entirety of the [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Test_VS2K8/MPAdvTest.cpp]MPAdvTest.cpp[/url] file is copy/pasted from Microsoft's example code.
 
 From a code breaker's perspective, what we are looking for is a way to get the [i]VerifyLicense[/i] function return [i]TRUE[/i]. On Windows Mobile specifically, the easiest way to make this happen for all programs with a single patch is modifying return values of functions exposed by [i]coredll.dll[/i].
  
