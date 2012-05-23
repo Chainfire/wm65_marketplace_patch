@@ -1,0 +1,213 @@
+--- BELOW IS A COPY OF THE RAW TEXT OF MY BLOG POST ABOUT THIS CODE ---
+
+
+This week, the Windows Mobile 6.x Marketplace was closed. The end of an era :)
+
+While most current readers will probably know me from my work with Android, I used to do a lot of things on Windows Mobile. Several of those projects were pretty unique, due to hacking techniques employed that few others knew. I am referring here to runtime/dynamically patching kernel code, coredll imports, etc.
+
+Some of these projects include [url="http://www.modaco.com/topic/293601-fpu-enabler/"]FPU Enabler[/url] (which replaced the standard floating point functions on the last few WM phones with FPU based variants - together with NuShrike), [url="http://forum.xda-developers.com/showthread.php?t=637771"]AutoClosePatch[/url] (improve multitasking behavior on low memory devices like the Samsung Omnia II), [url="http://forum.xda-developers.com/showthread.php?t=577627"]Marketplace Region Switch[/url] (switched your region in Marketplace, before Microsoft built in that option, by faking MCC data), and many more.
+
+Of course, let us not forget [url="http://forum.xda-developers.com/showthread.php?t=583566"]Marketplace Advanced Protection Patch[/url]. Some people thought I didn't actually have this due to me not releasing it. At the time I thought it more important to protect other developers. As Marketplace is now shutdown however, I've decided to release the code. 
+
+Its a nice trip down memory lane, and I will take some time to somewhat explain some of the techniques I have used. I will do my best, but it has been three years since I have written this code, so not everything I write may be 100% correct. I will try to keep it short-ish, but I know the article will still be long - I could write entire books on this subject :)
+
+You will need the accompanying code, which is hosted at [url="http://github.com/Chainfire/wm65_marketplace_patch"]GitHub[/url].
+
+[b]The test project[/b]
+
+Let us start with the [url="http://github.com/Chainfire/wm65_marketplace_patch/tree/master/Test_VS2K8"]Test_VS2K8[/url]] folder. This folder contains the Visual Studio test project. It is simply the minimal code to test Marketplace's "Advanced" Protection. Aside from [i]_tmain[/i] function, the entirety of the [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Test_VS2K8/MPAdvTest.cpp]MPAdvTest.cpp[/url] file is copy/pasted from Microsoft's example code.
+
+From a code breaker's perspective, what we are looking for is a way to get the [i]VerifyLicense[/i] function return [i]TRUE[/i]. On Windows Mobile specifically, the easiest way to make this happen for all programs with a single patch is modifying return values of functions exposed by [i]coredll.dll[/i].
+ 
+If you look closely at the code, you will notice that the [i]VerifyLicense[/i] function will return [i]TRUE[/i] if both:
+- The [i]HKCU\Security\Software\Microsoft\Marketplace\Licenses\<licensecode>[/i] registry key can be read and is of type [i]REG_BINARY[/i]
+- The [i]CryptVerifySignature[/i] returns [i]TRUE[/i]
+
+We can achieve these conditions by:
+- Making sure [i]HKCU\Security\Software\Microsoft\Marketplace\Licenses[/i] exists
+- Patching the [i]RegQueryValueExW[/i] function
+- Patching the [i]CryptVerifySignatureW[/i] function
+
+Both of these functions are exposed through [i]coredll.dll[/i], so let's get busy!
+
+[b]The patch project[/b]
+
+The patch code is in the [url="http://github.com/Chainfire/wm65_marketplace_patch/tree/master/Patch_FPC"]Patch_FPC[/url] folder. This folder contains the FreePascal test project. Yes, it's written in Pascal, get over it. It's also fairly visible I wrote it in a rush, the main unit is still called [i]unit1[/i] ! 
+
+It's difficult to compile due to depending on KOL-CE for the UI, which at least at the time I wrote this patch had several versions that could conflict. It should be fairly easy to turn into a console project without that dependency, though. 
+
+It is unlikely you will be trying to compile this anyway, so let's just get down to the explaining.
+
+The important background code employed for the hacking is located in the [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Patch_FPC/upatch.pas"]upatch.pas[/url] file. Various versions of this unit are used in several of my WM hacking projects. The code looks simple enough, but make no mistake, lots and lots of hours were lost by several hackers to get all this information together. Remember, it's not like we had Windows Mobile source code :)
+
+You can mostly the ignore [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Patch_FPC/uregistry.pas"]uregistry.pas[/url], it contains utility functions only.
+
+The main code can be found in [url="http://github.com/Chainfire/wm65_marketplace_patch/blob/master/Patch_FPC/unit1.pas"]unit1.pas[/url].
+
+Let's walk through the actual patch code, located in [i]unit1.pas[/i], starting at line 134:
+
+[code]
+SetKMode(TRUE);
+SetProcPermissions($FFFFFFFF);
+[/code]
+
+These two lines do something very important: we switch to kernel mode and enable read/write access to all processes, threads, and memory range. Essentially we're disabling all those nasty protections designed to prevent exactly what we are trying to do.
+
+Skipping over the registry key creation bit, we go on at lines 143-144:
+
+[code]
+fNewCryptVerifySignature := GetFunctionCode(@newCryptVerifySignatureW, 1024, opPatch);
+fNewRegQueryValueEx := GetFunctionCode(@newRegQueryValueExW, 1024, opPatch);
+[/code]
+
+What we are doing here is filling an array with the raw bytes that are the compiled code of our replacement functions, defined on lines 61-96:
+
+(Note: opPatch is simply a variable containing the raw binary for the "return" instruction, which should be used as end marker for copying the function - this is not always exactly the same for each function! We also know that the function will not be longer than 1024 bytes)
+
+[code]
+function newCryptVerifySignatureW(hHash: DWORD; pbSignature: PBYTE; dwSigLen: DWORD; hPubKey: DWORD; sDescription: PWideChar; dwFlags: DWORD): BOOL;
+begin
+  Result := True;
+end;
+
+function newRegQueryValueExW(hKey:HKEY; lpValueName:LPCWSTR; lpReserved:LPDWORD; lpType:LPDWORD; lpData:pointer;lpcbData:LPDWORD):LONG;
+var
+  c: Byte;
+  p: PBYTE;
+  oldRQVE: TRegQueryValueExW;
+begin
+@@  oldRQVE := TRegQueryValueExW($12345678);
+
+  Result := 6; // ERROR_INVALID_HANDLE
+  
+  if lpValueName <> nil then begin
+    DWORD(p) := DWORD(lpValueName);
+
+    c := 0;
+    repeat
+      if p^ = $2D then // '-'
+        inc(c);
+      inc(p, 2);
+    until p^ = 0;
+    
+    if c = 4 then begin
+      lpType^ := 3; // REG_BINARY
+      lpcbData^ := 256; // MAX_LICENSE_LENGTH
+
+      Result := 0; // ERROR_SUCCESS
+    end;
+  end;
+  
+  if Result <> 0 then
+    Result := oldRQVE(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+end;
+[/code]
+
+The [i]newCryptVerifySignatureW[/i] function is simply enough - we just return true and that's that! If this wasn't proof-of-concept code, we would probably do some checking of parameters, to make sure that what we are verifying is actually a signature we [i]want[/i] to falsely verify as correct.
+
+The [i]newRegQueryValueExW[/i] is a bit more complicated. We don't want to always return ERROR_SUCCESS, we need to check the parameters. [i]RegQueryValueExW[/i] is such an often used and important function, if we patch it incorrectly, the system would constantly crash. 
+
+You might be surprised this code is not written in assembler for the patching. You can do that. For FPU Enabler we did that for performance reasons. But as long as you don't make any jumps outside of these patched functions, you can write them in C or Pascal just fine. If you call RTL functions though, an invalid jump address will be referenced and the target application will crash. For the same reason, you cannot use variables defined outside of the function either, and depending on the compiler, you cannot even use pre-defined non-literal constants.
+
+Note that this is explicitly not the case for all functions exposed by [i]coredll.dll[/i], because all processes have that DLL loaded - and thanks to the nature of Windows Mobile, they all have it loaded at the exact same address, so those function call addresses are always valid. That is why we can call the original [i]RegQueryValueExW[/i] (oldRQVE) function without issue.
+
+What you need to keep in mind is that these functions we're patching into place, are not going to be called in the same context as our application.
+
+So, as stated, we cannot use variables either. So how do we know what the address of the original [i]RegQueryValueExW[/i] function? On the highlighted line you might notice we set the address of the original function to hex value 12345678. It is important that this number is unique (for a different function/reference, use a different number) otherwise the compiler will mess with the assembler output we want to create. What happens is that this literal value will actually be stored in the generated function code, next to the actual code - not somewhere else in the binary file. 
+
+The entire function, including that value, will be one continuous block, that we can directly relocate anywhere in memory - later on in the code, we will be replacing that 0x12345678 value with the actual jump address.
+
+So, let's go back to the main code block. Due to the GetFunctionCode calls, we now have our compiled functions stored in an array. Let's move on to the heap creation calls, starting at line 146:
+
+[code]
+  totalMem := 1024;
+  
+  hCoreDll := LoadLibrary('coredll.dll');
+  try
+    hHeap := HeapCreate(HEAP_SHARED_READONLY, totalMem, totalMem);
+    if hHeap <> 0 then
+    try
+      pHeap := HeapAlloc(hHeap, HEAP_ZERO_MEMORY, totalMem);
+      if pHeap <> nil then
+      try
+        cur := pHeap;
+[/code]
+
+What we are doing here is creating a special heap writable by our patch process, and readable by all other processes. Importantly, the address for this heap will be exactly the same across process and thread boundaries, so we can directly refer to addresses inside this heap, and it will always work. We can even execute code located at these addresses - and you guessed right: that's exactly what we are going to do.
+
+There is one caveat for larger hacks, though: heaps with sizes over 1024 will often fail to be allocated. There are of course workarounds, but let's not get into that right now :)
+
+Note that we also store a second pointer to the start of the heap. We're going to increase that one as we go to keep track of where we are in our newly created heap.
+
+Continuing on with lines 158-162:
+[code]
+aOldCryptVerifySignature := GetProcAddress(hCoreDLL, 'CryptVerifySignatureW');
+aNewCryptVerifySignature := cur;
+Move(fNewCryptVerifySignature[0], aNewCryptVerifySignature^, Length(fNewCryptVerifySignature));
+jNewCryptVerifySignature := CreateJumpCode(aNewCryptVerifySignature);
+DWORD(cur) := DWORD(cur) + Length(fNewCryptVerifySignature);
+[/code]
+
+What we are doing here is getting the normal "call address" for [i]CryptVerifySignatureW[/i] using [i]GetProcAddress[/i]. Then we store the replacement function at the address pointed to by the [i]cur[/i] pointer. Lastly, we create an array containing the jump code to the address of the new function in our world-readable heap by using the [i]CreateJumpCode[/i] function, and increase the [i]cur[/i] pointer. The [i]CreateJumpCode[/i] function simply generates a binary jump instruction to an address. We will need this jump code later.
+
+The replacement function for [i]CryptVerifySignatureW[/i] is now stored in the special heap we created, and we have all the pointers we want for later use.
+
+On lines 164-180:
+[code]
+aOldRegQueryValueEx := GetProcAddress(hCoreDLL, 'RegQueryValueExW');
+
+tf := CreateJumpCode(Pointer(DWORD(aOldRegQueryValueEx) + 8));
+SetLength(tf, 16);
+Move(tf[0], tf[8], 8);
+Move(GetCoreDLLAddress(hCoreDLL, aOldRegQueryValueEx)^, tf[0], 8);
+Move(tf[0], cur^, 16);
+aJumpRegQueryValueEx := cur;
+DWORD(cur) := DWORD(cur) + 16;
+        
+aNewRegQueryValueEx := cur;
+Move(fNewRegQueryValueEx[0], aNewRegQueryValueEx^, Length(fNewRegQueryValueEx));
+jNewRegQueryValueEx := CreateJumpCode(aNewRegQueryValueEx);
+DWORD(cur) := DWORD(cur) + Length(fNewRegQueryValueEx);
+        
+Move(aJumpRegQueryValueEx, cur^, 4);
+DWORD(cur) := DWORD(cur) + 4;
+[/code]
+
+We're doing the same thing for [i]RegQueryValueExW[/i] as for [i]CryptVerifySignatureW[/i], but there a few complications we must overcome, because [i]RegQueryValueExW[/i] is a bit more complicated function because we need to call the original function.
+
+This is a problem, because later on we will patch the original function. We will overwrite the first 8 bytes of that function with a jump to our modified function! So if we'd call the original function again, we'd get some nice recursion and ultimately a stack overflow. 
+
+We circumvent this problem, by first saving those first 8 bytes of the original function, followed by a jump instruction to (original location + 8 bytes). Obvious enough once you've thought of it!
+
+You might notice the first time use of [i]GetCoreDLLAddress[/i]. If you're wondering why we do not just use a pointer returned from [i]GetProcAddress[/i], it's because the latter returns a pointer to a read-only "shadow" copy of [i]coredll.dll[/i]. The [i]GetCoreDLLAddress[/i] function returns the "real" location to the code.
+
+Also note that at this point I have cheated a bit. You can't always just relocate the first 8 bytes of a function. It depends on the function code! Of course you would first confirm with IDA if this is possible, and if not, try a different way to get it all done.
+
+After saving the original bytes and the extra jump code on our special heap, we copy the replacement function to our heap as well.
+
+On the last two lines, we also write the address of the original function to our heap. This value replaces the 0x12345678 value we referenced earlier. That value is stored immediately after the return instruction in the compiled version of our replacement code. The reference to that literal is relative, that's why we can get away with this.
+
+So, at this point, our special heap is filled as follows:
+
+[code]
+X bytes: replacement CryptVerifySignatureW function
+8 bytes: first 8 bytes of original RegQueryValueExW
+8 bytes: jump code to original (RegQueryValueExW + 8)
+Y bytes: replacement RegQueryValueExW function
+4 bytes: original RegQueryValueExW address (replaces 0x12345678)
+[/code]
+
+On lines 182-184 are the final calls that enable our hack:
+[code]
+fOldCryptVerifySignature := PatchCode(GetCoreDLLAddress(hCoreDLL, aOldCryptVerifySignature), jNewCryptVerifySignature);
+fOldRegQueryValueEx := PatchCode(GetCoreDLLAddress(hCoreDLL, aOldRegQueryValueEx), jNewRegQueryValueEx);
+ClearCache;
+[/code]
+
+These two calls overwrite the first 8 bytes of the two original functions with jump instructions to our replacement functions located on our special heap. We also call the ClearCache function to make sure the CPU's instruction caches are cleared.
+
+After executing this code, any program calling either of these two functions will be calling our code instead. Neat, isn't it ?
+
+After this, the code waits 30 seconds and unpatches.
+
+That's all folks - I hope this little article and the code has been interesting to somebody!
