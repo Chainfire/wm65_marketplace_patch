@@ -1,0 +1,44 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TForm1','FORMDATA',[
+  'TPF0'#6'TForm1'#5'Form1'#4'Left'#3#185#1#6'Height'#3','#1#3'Top'#3#190#0#5'W'
+  +'idth'#3#144#1#18'HorzScrollBar.Page'#3#143#1#18'VertScrollBar.Page'#3#23#1#7
+  +'Caption'#6#5'Form1'#12'ClientHeight'#3#24#1#11'ClientWidth'#3#144#1#0#9'TKO'
+  +'LPanel'#12'pnlContainer'#4'Left'#2'X'#6'Height'#3#180#0#3'Top'#2'8'#5'Width'
+  +#3#240#0#14'AcceptChildren'#9#8'TabOrder'#2#0#5'Color'#7#7'clWhite'#11'paren'
+  +'tColor'#8#10'Font.Color'#7#12'clWindowText'#13'Font.FontName'#6#13'MS Sans '
+  +'Serif'#16'Font.FontCharset'#2#1#9'edgeStyle'#7#6'esNone'#6'Border'#2#0#11'B'
+  +'rush.Color'#7#7'clWhite'#0#9'TKOLLabel'#6'Label1'#4'Left'#2#8#6'Height'#2#22
+  +#3'Top'#2#7#5'Width'#3#224#0#10'AnchorLeft'#9#9'AnchorTop'#9#11'AnchorRight'
+  +#9#7'Caption'#6#24'MarketPlaceAdvancedPatch'#5'Color'#7#7'clWhite'#14'Font.F'
+  +'ontStyle'#11#6'fsBold'#0#15'Font.FontHeight'#2#242#13'Font.FontName'#6#13'M'
+  +'S Sans Serif'#16'Font.FontCharset'#2#1#10'parentFont'#8#9'TextAlign'#7#8'ta'
+  +'Center'#11'Brush.Color'#7#9'clBtnFace'#0#0#9'TKOLLabel'#6'Label2'#4'Left'#2
+  +#8#6'Height'#2#22#3'Top'#2' '#5'Width'#3#224#0#10'AnchorLeft'#9#9'AnchorTop'
+  +#9#11'AnchorRight'#9#7'Caption'#6'%v1.0 - Copyright (C) 2009 - Chainfire'#5
+  +'Color'#7#7'clWhite'#14'Font.FontStyle'#11#6'fsBold'#0#15'Font.FontHeight'#2
+  +#245#13'Font.FontName'#6#13'MS Sans Serif'#16'Font.FontCharset'#2#1#10'paren'
+  +'tFont'#8#9'TextAlign'#7#8'taCenter'#11'Brush.Color'#7#7'clWhite'#0#0#11'TKO'
+  +'LListBox'#5'lbLog'#6'Height'#2'|'#3'Top'#2'8'#5'Width'#3#240#0#10'AnchorLef'
+  +'t'#9#9'AnchorTop'#9#11'AnchorRight'#9#12'AnchorBottom'#9#8'TabOrder'#2#0#10
+  +'Font.Color'#7#12'clWindowText'#13'Font.FontName'#6#13'MS Sans Serif'#16'Fon'
+  +'t.FontCharset'#2#1#11'Brush.Color'#7#8'clWindow'#0#0#0#11'TKOLProject'#11'K'
+  +'OLProject1'#11'projectName'#6#24'MarketPlaceAdvancedPatch'#11'projectDest'#6
+  +#24'MarketPlaceAdvancedPatch'#10'sourcePath'#6'8E:\SoftDev\Projects\Lazarus\'
+  +'CE\MarketplaceAdvancedPatch\'#10'outdcuPath'#6'8E:\SoftDev\Projects\Lazarus'
+  +'\CE\MarketplaceAdvancedPatch\'#4'left'#2#10#3'top'#2#8#0#0#8'TKOLForm'#8'KO'
+  +'LForm1'#7'Caption'#6#5'Form1'#14'UnitSourcePath'#6'8E:\SoftDev\Projects\Laz'
+  +'arus\CE\MarketplaceAdvancedPatch\'#8'formUnit'#6#5'unit1'#8'formMain'#9#11
+  +'defaultSize'#9#15'defaultPosition'#9#10'Font.Color'#7#12'clWindowText'#13'F'
+  +'ont.FontName'#6#13'MS Sans Serif'#16'Font.FontCharset'#2#1#11'Brush.Color'#7
+  +#9'clBtnFace'#12'OnFormCreate'#7#18'KOLForm1FormCreate'#4'left'#2'+'#3'top'#2
+  +#8#0#0#12'TKOLMainMenu'#9'MainMenu1'#4'left'#2'P'#3'top'#2#8#9'ItemCount'#2#2
+  +#9'Item0Name'#6#9'menuPatch'#12'Item0Caption'#6#5'Patch'#12'Item0Enabled'#9
+  +#12'Item0Visible'#9#12'Item0Checked'#8#15'Item0RadioGroup'#2#0#14'Item0Separ'
+  +'ator'#8#16'Item0Accelerator'#2#0#11'Item0Bitmap'#1#0#11'Item0OnMenu'#6#13'm'
+  +'enuPatchMenu'#17'Item0SubItemCount'#2#0#15'Item0WindowMenu'#8#9'Item1Name'#6
+  +#8'menuExit'#12'Item1Caption'#6#4'Exit'#12'Item1Enabled'#9#12'Item1Visible'#9
+  +#12'Item1Checked'#8#15'Item1RadioGroup'#2#0#14'Item1Separator'#8#16'Item1Acc'
+  +'elerator'#2#0#11'Item1Bitmap'#1#0#11'Item1OnMenu'#6#12'menuExitMenu'#17'Ite'
+  +'m1SubItemCount'#2#0#15'Item1WindowMenu'#8#0#0#0
+]);

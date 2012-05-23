@@ -1,0 +1,16 @@
+These are the sources for the Windows Mobile 6.5 Marketplace "Advanced Protection" patch.
+
+A few years I claimed I had this - various people did not believe me. I chose not to release the code at that time because other developers depended on this license verification working. The point in making it was letting Microsoft know that in my opinion, their license verification scheme was broken - due to the possibility for a "generic" patch.
+
+However, the Marketplace was shut down this week, so I no longer see any reason to keep this code private. Especially since it contains some interesting techniques. I have also used these techniques in many other "hacky" projects for Windows Mobile. While they aren't that useful at the moment, they're still interesting IMHO.
+
+Note: This is proof-of-concept code. It has not been stresstested in the wild. I have only created a simple test project based on the code provided by Microsoft, and wrote a patch to beat that specific implementation. 
+
+The Patch_FPC folder contains the sources for the patch code. It needs to be compiled with FreePascal and KOL-CE. You shouldn't really worry about that, the interesting stuff is the code itself. Getting it compiled will take some effort!
+
+The Test_VS2K8 folder contains the sources for an "Advanced Protection" test project. It takes the example code provided by Microsoft and simple tests it. It needs to be compiled with Visual Studio with the "Windows Mobile 6 Professional" target.
+
+Please see my blog post for further details!
+<url to follow>
+
+- Chainfire

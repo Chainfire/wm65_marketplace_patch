@@ -1,0 +1,129 @@
+object Form1: TForm1
+  Left = 441
+  Height = 300
+  Top = 190
+  Width = 400
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 279
+  Caption = 'Form1'
+  ClientHeight = 280
+  ClientWidth = 400
+  object pnlContainer: TKOLPanel
+    Left = 88
+    Height = 180
+    Top = 56
+    Width = 240
+    AcceptChildren = True
+    TabOrder = 0
+    Color = clWhite
+    parentColor = False
+    Font.Color = clWindowText
+    Font.FontName = 'MS Sans Serif'
+    Font.FontCharset = 1
+    edgeStyle = esNone
+    Border = 0
+    Brush.Color = clWhite
+    object Label1: TKOLLabel
+      Left = 8
+      Height = 22
+      Top = 7
+      Width = 224
+      AnchorLeft = True
+      AnchorTop = True
+      AnchorRight = True
+      Caption = 'MarketPlaceAdvancedPatch'
+      Color = clWhite
+      Font.FontStyle = [fsBold]
+      Font.FontHeight = -14
+      Font.FontName = 'MS Sans Serif'
+      Font.FontCharset = 1
+      parentFont = False
+      TextAlign = taCenter
+      Brush.Color = clBtnFace
+    end
+    object Label2: TKOLLabel
+      Left = 8
+      Height = 22
+      Top = 32
+      Width = 224
+      AnchorLeft = True
+      AnchorTop = True
+      AnchorRight = True
+      Caption = 'v1.0 - Copyright (C) 2009 - Chainfire'
+      Color = clWhite
+      Font.FontStyle = [fsBold]
+      Font.FontHeight = -11
+      Font.FontName = 'MS Sans Serif'
+      Font.FontCharset = 1
+      parentFont = False
+      TextAlign = taCenter
+      Brush.Color = clWhite
+    end
+    object lbLog: TKOLListBox
+      Height = 124
+      Top = 56
+      Width = 240
+      AnchorLeft = True
+      AnchorTop = True
+      AnchorRight = True
+      AnchorBottom = True
+      TabOrder = 0
+      Font.Color = clWindowText
+      Font.FontName = 'MS Sans Serif'
+      Font.FontCharset = 1
+      Brush.Color = clWindow
+    end
+  end
+  object KOLProject1: TKOLProject
+    projectName = 'MarketPlaceAdvancedPatch'
+    projectDest = 'MarketPlaceAdvancedPatch'
+    sourcePath = 'E:\SoftDev\Projects\Lazarus\CE\MarketplaceAdvancedPatch\'
+    outdcuPath = 'E:\SoftDev\Projects\Lazarus\CE\MarketplaceAdvancedPatch\'
+    left = 10
+    top = 8
+  end
+  object KOLForm1: TKOLForm
+    Caption = 'Form1'
+    UnitSourcePath = 'E:\SoftDev\Projects\Lazarus\CE\MarketplaceAdvancedPatch\'
+    formUnit = 'unit1'
+    formMain = True
+    defaultSize = True
+    defaultPosition = True
+    Font.Color = clWindowText
+    Font.FontName = 'MS Sans Serif'
+    Font.FontCharset = 1
+    Brush.Color = clBtnFace
+    OnFormCreate = KOLForm1FormCreate
+    left = 43
+    top = 8
+  end
+  object MainMenu1: TKOLMainMenu
+    left = 80
+    top = 8
+    ItemCount = 2
+    Item0Name = 'menuPatch'
+    Item0Caption = 'Patch'
+    Item0Enabled = True
+    Item0Visible = True
+    Item0Checked = False
+    Item0RadioGroup = 0
+    Item0Separator = False
+    Item0Accelerator = 0
+    Item0Bitmap = (    )
+    Item0OnMenu = 'menuPatchMenu'
+    Item0SubItemCount = 0
+    Item0WindowMenu = False
+    Item1Name = 'menuExit'
+    Item1Caption = 'Exit'
+    Item1Enabled = True
+    Item1Visible = True
+    Item1Checked = False
+    Item1RadioGroup = 0
+    Item1Separator = False
+    Item1Accelerator = 0
+    Item1Bitmap = (    )
+    Item1OnMenu = 'menuExitMenu'
+    Item1SubItemCount = 0
+    Item1WindowMenu = False
+  end
+end
