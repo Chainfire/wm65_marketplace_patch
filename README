@@ -11,6 +11,6 @@ The Patch_FPC folder contains the sources for the patch code. It needs to be com
 The Test_VS2K8 folder contains the sources for an "Advanced Protection" test project. It takes the example code provided by Microsoft and simple tests it. It needs to be compiled with Visual Studio with the "Windows Mobile 6 Professional" target.
 
 Please see my blog post for further details!
-http://www.chainfire.eu/articles/116/Windows_Mobile_6_x_Hackery_Explained/
+https://ancient.chainfire.eu/articles/116/Windows_Mobile_6_x_Hackery_Explained/
 
 - Chainfire
